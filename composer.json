@@ -1,0 +1,40 @@
+{
+    "name": "unionco/craft-autosuggest",
+    "description": "Create autosuggest fields on your site based on tags, categories, entries, etc.",
+    "type": "craft-plugin",
+    "version": "0.0.1",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "autosuggest"
+    ],
+    "support": {
+        "docs": "https://github.com/abryrath/autosuggest/blob/master/README.md",
+        "issues": "https://github.com/abryrath/autosuggest/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "abry rath",
+            "homepage": "https://github.com/abryrath"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+          "unionco\\autosuggest\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "AutoSuggest",
+        "handle": "autosuggest",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/abryrath/autosuggest/master/CHANGELOG.md",
+        "class": "unionco\\autosuggest\\AutoSuggest"
+    }
+}

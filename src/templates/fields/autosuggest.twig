@@ -1,0 +1,24 @@
+{# 
+    @param array opts
+    - id: required - id for the react component
+    - sources: 
+ #}
+{% macro display(opts) %}
+    {% do view.registerAssetBundle('\\unionco\\autosuggest\\assetbundles\\autosuggest\\AutosuggestAsset') %}
+    <div id="{{ opts.id ~ '-target' }}"></div>
+    <script>
+    {# console.log('{{ opts.sources|json_encode|raw}}'); #}
+        function wait() {
+            if (!window.autosuggestCreateField) {
+                setTimeout(wait, 10);
+            } else {
+                window.autosuggestCreateField({
+                    id: '{{ opts.id }}',
+                    sources: JSON.parse('{{ opts.sources|json_encode|raw }}')
+                });
+                return;
+            }
+        };
+        wait();
+    </script>
+{% endmacro %}

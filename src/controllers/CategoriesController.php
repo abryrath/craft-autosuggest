@@ -25,10 +25,11 @@ class CategoriesController extends Controller
         $search = $requestBody->search ?? '';
 
         $categories = Category::find()
-            ->groupId($categoryGroupId)
+            ->groupId($categoryGroupId ?? [])
             ->title(Db::escapeParam($search) . '*')
             ->all();
 
+        $return = [];
         foreach ($categories as $category) {
             $return[] = [
                 'id' => $category->id,

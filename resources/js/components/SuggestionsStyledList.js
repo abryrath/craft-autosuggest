@@ -1,4 +1,5 @@
-import React from 'react';
+// import React from 'react';
+import { h, render } from 'preact';
 
 export default function SuggestionsStyledList(props) {
   const wrapperStyles = {
@@ -37,11 +38,7 @@ export default function SuggestionsStyledList(props) {
           {suggestions.all.map((sug, i) => (
             <div
               key={sug.id}
-              style={
-                i === selected
-                  ? selectedListItemStyles
-                  : listItemStyles
-              }
+              style={i === selected ? selectedListItemStyles : listItemStyles}
             >
               {sug.title}
             </div>

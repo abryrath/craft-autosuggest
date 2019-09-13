@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect } from 'react';
+import { h, render } from 'preact';
+import { useState, useEffect } from 'preact/hooks';
 import axios from '../utils/axios';
+import Axios from 'axios';
 import SuggestionsDataList from './SuggestionsDataList';
 import SuggestionsStyledList from './SuggestionsStyledList';
 
@@ -12,54 +15,52 @@ const defaultSuggestions = {
 export default function Autosuggest(props) {
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState(defaultSuggestions);
-
-  //   const [tagGroupId, setTagGroupId] = useState([]);
   const [tags, setTags] = useState([]);
-
   const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    async function fetchSources() {
-      if (props.sources) {
-        const requests = [];
-        if (props.sources.tags) {
-          console.log('fetch tags');
-          const { ids } = props.sources.tags;
-          //   const { data } =
-          requests.push(
-            axios.post('tags/search-for-tags', {
-              tagGroupId: ids,
-            }),
-          );
-          //   setTags(data);
-        }
-        if (props.sources.categories) {
-          console.log('fetch categories');
-          const { ids } = props.sources.categories;
-          requests.push(
-            axios.post('categories/search-for-categories', {
-              categoryGroupId: ids,
-            }),
-          );
-        }
-        const responses = await Promise.all(requests);
-        responses.forEach(response => {
-          if (response.config.url.indexOf('search-for-tags') >= 0) {
-            setTags(response.data);
-          } else if (
-            response.config.url.indexOf('search-for-categories') >= 0
-          ) {
-            setCategories(response.data);
-          }
-        });
-        console.log(responses);
+  async function fetchSources() {
+    if (props.sources) {
+      const requests = [];
+      const callbacks = [];
+      if (props.sources.tags) {
+        console.log('fetch tags');
+        const { ids } = props.sources.tags;
+        requests.push(
+          axios.post('tags/search-for-tags', {
+            tagGroupId: ids,
+          }),
+        );
+        callbacks.push(data => setTags(data));
       }
-    }
+      if (props.sources.categories) {
+        console.log('fetch categories');
+        const { ids } = props.sources.categories;
+        requests.push(
+          axios.post('categories/search-for-categories', {
+            categoryGroupId: ids,
+          }),
+        );
+        callbacks.push(data => setCategories(data));
+      }
 
-    fetchSources();
-  }, []);
+      console.log(requests);
+      Axios.all(requests).then(
+        Axios.spread((...args) => {
+          args.map((resp, i) => {
+            callbacks[i](resp.data);
+          });
+        }),
+      );
+    }
+  }
 
   useEffect(() => {
+    console.log('sources changed', props.sources);
+    fetchSources();
+  }, [props.sources]);
+
+  useEffect(() => {
+    console.log('input changed', input);
     if (!input) {
       setSuggestions(defaultSuggestions);
       return;
@@ -90,6 +91,14 @@ export default function Autosuggest(props) {
 
   const displayType = props.type || 'datalist';
   const wrapperClasses = `Autosuggest ${props.wrapperClass || ''}`;
+  const { debug } = props.options;
+  const debugOutput = debug ? (
+    <div>
+      Suggestions: <pre>{JSON.stringify(suggestions, null, 2)}</pre>
+    </div>
+  ) : (
+    ''
+  );
   switch (displayType.toLowerCase()) {
     case 'styledlist':
       const [selected, setSelected] = useState(0);
@@ -120,6 +129,7 @@ export default function Autosuggest(props) {
 
       return (
         <div className={wrapperClasses} id={props.id}>
+          {debugOutput}
           <SuggestionsStyledList
             suggestions={suggestions}
             id={listId}
@@ -128,7 +138,7 @@ export default function Autosuggest(props) {
             <input
               type="text"
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onKeyUp={e => setInput(e.target.value)}
               onKeyDown={keydownListener}
             />
           </SuggestionsStyledList>
@@ -140,10 +150,11 @@ export default function Autosuggest(props) {
       const listId = `${props.id}-list`;
       return (
         <div className={wrapperClasses} id={props.id}>
+          {debugOutput}
           <input
             type="text"
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onKeyUp={e => setInput(e.target.value)}
             list={listId}
           />
           <SuggestionsDataList suggestions={suggestions} id={listId} />

@@ -24,10 +24,11 @@ class TagsController extends Controller
         $search = $requestBody->search ?? '';
 
         $tags = Tag::find()
-            ->groupId($tagGroupId)
+            ->groupId($tagGroupId ?? [])
             ->title(Db::escapeParam($search) . '*')
             ->all();
 
+        $return = [];
         foreach ($tags as $tag) {
             $return[] = [
                 'id' => $tag->id,

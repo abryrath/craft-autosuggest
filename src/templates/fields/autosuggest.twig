@@ -1,28 +1,20 @@
-{# 
-    @param array opts
-    - id: required - id for the react component
-    - sources: 
- #}
 {% macro display(opts) %}
-    {% do view.registerAssetBundle('\\unionco\\autosuggest\\assetbundles\\autosuggest\\AutosuggestAsset') %}
     <div id="{{ opts.id ~ '-target' }}"></div>
-    <script>
-    {# console.log('{{ opts.sources|json_encode|raw}}'); #}
-        console.log('{{ opts.id }}');
-        function wait() {
-            if (!window.autosuggestCreateField) {
-                console.log('undefined! - {{ opts.id }}');
-                return setTimeout(wait, 500);
-            } else {
-                window.autosuggestCreateField({
-                    id: '{{ opts.id }}',
-                    sources: JSON.parse('{{ opts.sources|json_encode|raw }}'),
-                    type: "{{ opts.type|default('datalist') }}"
-                });
-                return;
-            }
-        };
-        wait();
-    </script>
+    {% js %}
+    window.autosuggestCreateField({
+        id: '{{ opts.id }}',
+        sources: JSON.parse('{{ opts.sources|json_encode|raw }}'),
+        type: "{{ opts.type|default('datalist') }}"
+    });
+    {% endjs %}
 {% endmacro %}
 
+
+{% macro demo(opts) %}
+    <div id="{{ opts.id ~ '-target' }}"></div>
+    {% js %}
+    window.autosuggestCreateDemo({
+        id: '{{ opts.id }}'
+    });
+    {% endjs %}
+{% endmacro %}

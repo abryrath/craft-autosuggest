@@ -3,35 +3,36 @@
 namespace unionco\autosuggest\controllers;
 
 use Craft;
+use craft\elements\Category;
 use craft\elements\Tag;
 use craft\helpers\Db;
 use craft\helpers\Json;
 use craft\web\Controller;
 
-class TagsController extends Controller
+class CategoriesController extends Controller
 {
     protected $allowAnonymous = true;
     public $enableCsrfValidation = false;
 
-    public function actionSearchForTags()
+    public function actionSearchForCategories()
     {
         $this->requirePostRequest();
         $this->requireAcceptsJson();
 
         $request = Craft::$app->getRequest();
         $requestBody = Json::decode($request->getRawBody(), false);
-        $tagGroupId = $requestBody->tagGroupId ?? null;
+        $categoryGroupId = $requestBody->categoryGroupId ?? null;
         $search = $requestBody->search ?? '';
 
-        $tags = Tag::find()
-            ->groupId($tagGroupId)
+        $categories = Category::find()
+            ->groupId($categoryGroupId)
             ->title(Db::escapeParam($search) . '*')
             ->all();
 
-        foreach ($tags as $tag) {
+        foreach ($categories as $category) {
             $return[] = [
-                'id' => $tag->id,
-                'title' => $tag->title,
+                'id' => $category->id,
+                'title' => $category->title,
             ];
         }
 

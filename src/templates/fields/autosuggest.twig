@@ -8,13 +8,16 @@
     <div id="{{ opts.id ~ '-target' }}"></div>
     <script>
     {# console.log('{{ opts.sources|json_encode|raw}}'); #}
+        console.log('{{ opts.id }}');
         function wait() {
             if (!window.autosuggestCreateField) {
-                setTimeout(wait, 10);
+                console.log('undefined! - {{ opts.id }}');
+                return setTimeout(wait, 500);
             } else {
                 window.autosuggestCreateField({
                     id: '{{ opts.id }}',
-                    sources: JSON.parse('{{ opts.sources|json_encode|raw }}')
+                    sources: JSON.parse('{{ opts.sources|json_encode|raw }}'),
+                    type: "{{ opts.type|default('datalist') }}"
                 });
                 return;
             }
@@ -22,3 +25,4 @@
         wait();
     </script>
 {% endmacro %}
+
